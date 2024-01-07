@@ -2,7 +2,9 @@ use nom::IResult;
 
 pub mod column_type;
 pub mod command;
-pub mod table;
+pub mod table_defination;
+
+pub use command::command_type;
 trait Sizable {
     fn byte_size(&self) -> u32;
 }

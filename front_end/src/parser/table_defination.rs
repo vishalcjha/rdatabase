@@ -12,7 +12,7 @@ use crate::CommandType;
 use super::{column_type::Column, NomParsable};
 
 #[derive(Debug, Clone, PartialEq, PartialOrd)]
-struct Table {
+struct TableDefination {
     name: String,
     columns: Vec<Column>,
 }
@@ -26,7 +26,7 @@ fn parse_columns(columns: &str) -> IResult<&str, Vec<Column>> {
     Ok((left, columns))
 }
 
-impl NomParsable for Table {
+impl NomParsable for TableDefination {
     fn nom_parse(input: &str) -> IResult<&str, Self> {
         let (left, (_, _, _, _, table_name, _, columns)) = tuple((
             tag("create"),
@@ -40,7 +40,7 @@ impl NomParsable for Table {
 
         Ok((
             left,
-            Table {
+            TableDefination {
                 name: String::from(table_name),
                 columns,
             },
@@ -48,7 +48,7 @@ impl NomParsable for Table {
     }
 }
 
-impl TryFrom<CommandType> for Table {
+impl TryFrom<CommandType> for TableDefination {
     type Error = anyhow::Error;
 
     fn try_from(value: CommandType) -> Result<Self, Self::Error> {
@@ -59,7 +59,7 @@ impl TryFrom<CommandType> for Table {
             )));
         };
 
-        let parse_result = Table::nom_parse(&command)
+        let parse_result = TableDefination::nom_parse(&command)
             .map_err(|err| anyhow!(format!("Failed to craete table with error {:?}", err)))?;
         Ok(parse_result.1)
     }
@@ -69,18 +69,18 @@ impl TryFrom<CommandType> for Table {
 mod test {
     use crate::parser::column_type::{Column, ColumnType};
 
-    use super::{CommandType::*, Table};
+    use super::{CommandType::*, TableDefination};
     #[test]
     fn test_successful() {
         let create_command = CREATE(String::from(
             "create table    test ( col1 int, col2 text, col3 int);",
         ));
 
-        let result = Table::try_from(create_command);
+        let result = TableDefination::try_from(create_command);
         assert!(result.is_ok());
 
         assert_eq!(
-            Table {
+            TableDefination {
                 name: String::from("test"),
                 columns: vec![
                     Column::new("col1", ColumnType::Int),
