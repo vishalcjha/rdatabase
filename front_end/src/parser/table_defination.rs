@@ -1,4 +1,3 @@
-use anyhow::anyhow;
 use nom::{
     bytes::complete::tag,
     character::complete::{alpha1, space1},
@@ -6,8 +5,6 @@ use nom::{
     sequence::{delimited, tuple},
     IResult,
 };
-
-use crate::CommandType;
 
 use super::{column_type::Column, NomParsable};
 
@@ -48,36 +45,20 @@ impl NomParsable for TableDefination {
     }
 }
 
-impl TryFrom<CommandType> for TableDefination {
-    type Error = anyhow::Error;
-
-    fn try_from(value: CommandType) -> Result<Self, Self::Error> {
-        let CommandType::CREATE(command) = value else {
-            return Err(anyhow!(format!(
-                "Incorrect commant {:#?} for create table",
-                value
-            )));
-        };
-
-        let parse_result = TableDefination::nom_parse(&command)
-            .map_err(|err| anyhow!(format!("Failed to craete table with error {:?}", err)))?;
-        Ok(parse_result.1)
-    }
-}
-
 #[cfg(test)]
 mod test {
-    use crate::parser::column_type::{Column, ColumnType};
+    use crate::parser::{
+        column_type::{Column, ColumnType},
+        NomParsable,
+    };
 
-    use super::{CommandType::*, TableDefination};
+    use super::TableDefination;
     #[test]
-    fn test_successful() {
-        let create_command = CREATE(String::from(
-            "create table    test ( col1 int, col2 text, col3 int);",
-        ));
+    fn test_successful() -> Result<(), String> {
+        let create_command = "create table    test ( col1 int, col2 text, col3 int);";
 
-        let result = TableDefination::try_from(create_command);
-        assert!(result.is_ok());
+        let result =
+            TableDefination::nom_parse(create_command).map_err(|err| format!("{:?}", err))?;
 
         assert_eq!(
             TableDefination {
@@ -88,7 +69,9 @@ mod test {
                     Column::new("col3", ColumnType::Int)
                 ]
             },
-            result.unwrap()
+            result.1
         );
+
+        Ok(())
     }
 }

@@ -1,9 +1,6 @@
 use nom::{
     bytes::complete::{tag, tag_no_case},
-    character::{
-        complete::{alphanumeric1, space0},
-        streaming::space1,
-    },
+    character::complete::{alphanumeric1, space0, space1},
     combinator::opt,
     multi::separated_list1,
     sequence::{delimited, tuple},
@@ -41,7 +38,7 @@ fn wrapped_parser(input: &str) -> nom::IResult<&str, Vec<&str>> {
 }
 
 fn parse_value_list(input: &str) -> nom::IResult<&str, Vec<Value>> {
-    let just_values = opt(tuple((tag_no_case("values"), space1, wrapped_parser)))(input.trim())?;
+    let just_values = opt(tuple((tag_no_case("values"), space0, wrapped_parser)))(input.trim())?;
     match just_values {
         (left, Some(values)) => Ok((
             left,
@@ -56,7 +53,7 @@ fn parse_value_list(input: &str) -> nom::IResult<&str, Vec<Value>> {
                 wrapped_parser,
                 space1,
                 tag_no_case("values"),
-                space1,
+                space0,
                 wrapped_parser,
             ))(left.trim())?;
             let values = names

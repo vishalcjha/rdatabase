@@ -1,6 +1,6 @@
 use crate::parser::{table_defination::TableDefination, NomParsable};
 
-#[derive(Debug, Clone, PartialEq, PartialOrd)]
+#[derive(Debug, Clone, PartialEq, PartialOrd, Eq, Ord)]
 pub struct CreateCommand(TableDefination);
 
 impl NomParsable for CreateCommand {
