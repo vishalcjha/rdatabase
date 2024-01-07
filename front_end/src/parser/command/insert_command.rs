@@ -18,11 +18,13 @@ pub enum Value {
 }
 
 impl Value {
-    pub(super) fn new_named_value(name: impl Into<String>, value: impl Into<String>) -> Value {
+    #[allow(dead_code)]
+    fn new_named_value(name: impl Into<String>, value: impl Into<String>) -> Value {
         Value::NamedValue(name.into(), value.into())
     }
 
-    pub(super) fn new_unnamed_value(value: impl Into<String>) -> Value {
+    #[allow(dead_code)]
+    fn new_unnamed_value(value: impl Into<String>) -> Value {
         Value::UnnamedValue(value.into())
     }
 }

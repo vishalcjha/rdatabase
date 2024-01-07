@@ -11,8 +11,8 @@ use crate::CommandType;
 
 use super::{column_type::Column, NomParsable};
 
-#[derive(Debug, Clone, PartialEq, PartialOrd)]
-struct TableDefination {
+#[derive(Debug, Clone, PartialEq, PartialOrd, Eq, Ord)]
+pub(super) struct TableDefination {
     name: String,
     columns: Vec<Column>,
 }
