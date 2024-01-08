@@ -1,25 +1,32 @@
-use std::{
-    io::{self, Write},
-    str::FromStr,
-};
-
-use front_end::CommandType;
+use rustyline::{error::ReadlineError, DefaultEditor};
 
 fn main() {
     println!("Starting database");
-    let mut cmd = String::new();
-    print_prompt();
-    while let Ok(_) = io::stdin().read_line(&mut cmd) {
-        match CommandType::from_str(cmd.trim()) {
-            Ok(command) => println!("received command {:?}", command),
-            Err(err) => eprintln!("{:?}", err),
-        }
-        cmd.clear();
-        print_prompt();
-    }
-}
+    let storage_manager = &storage::in_memory::manager::STORAGE_MANAGER;
+    let mut rl = DefaultEditor::new().unwrap();
 
-fn print_prompt() {
-    print!("db > ");
-    let _ = io::stdout().flush();
+    loop {
+        let readline = rl.readline("db > ");
+        match readline {
+            Ok(line) => {
+                let _ = rl.add_history_entry(line.as_str());
+                match storage_manager.execute_command(&line) {
+                    Ok(_) => println!("Execution successful"),
+                    Err(_) => println!("Failed to execute "),
+                };
+            }
+            Err(ReadlineError::Interrupted) => {
+                println!("CTRL-C");
+                break;
+            }
+            Err(ReadlineError::Eof) => {
+                println!("CTRL-D");
+                break;
+            }
+            Err(_) => panic!("Failed to read line. Aboring !!!"),
+        }
+    }
+
+    //#[cfg(feature = "with-file-history")]
+    let _ = rl.save_history("history.txt");
 }

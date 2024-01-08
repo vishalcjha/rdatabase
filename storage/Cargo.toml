@@ -1,5 +1,5 @@
 [package]
-name = "executer"
+name = "storage"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,5 +8,4 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.79"
 front_end = {path = "../front_end"}
-rustyline = {version =  "13.0.0", features = ["with-file-history"]}
-storage = {path = "../storage"}
+lazy_static = "1.4.0"

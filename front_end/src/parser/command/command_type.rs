@@ -52,7 +52,7 @@ impl FromStr for CommandType {
             }
             "create" => {
                 let create_command = CreateCommand::nom_parse(&lowercase_input)
-                    .map_err(|err| anyhow!("{:?}", err))?;
+                    .map_err(|_| anyhow!("create failed"))?;
                 Ok(CREATE(create_command.1))
             }
             _ => bail!("Failed to parse command {:?}", s),
